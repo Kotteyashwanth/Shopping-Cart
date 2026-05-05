@@ -1,0 +1,127 @@
+<mvc:View
+    controllerName="project11.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+
+    <Page>
+
+        <customHeader>
+            <Bar>
+
+                <contentLeft>
+                </contentLeft>
+
+                <contentMiddle>
+                    <Title text="NEXUS CART" level="H2"/>
+                </contentMiddle>
+
+                <contentRight>
+                </contentRight>
+
+            </Bar>
+        </customHeader>
+
+        <subHeader>
+            <Bar>
+
+                <contentLeft>
+                    <Select id="filterType" selectedKey="name" width="120px">
+                        <items>
+                            <core:Item key="name" text="Name"/>
+                            <core:Item key="price" text="Price"/>
+                        </items>
+                    </Select>
+                </contentLeft>
+
+                <contentMiddle>
+                    <SearchField 
+                        width="400px"
+                        placeholder="Search..."
+                        liveChange="onSearch"/>
+                </contentMiddle>
+
+                <contentRight>
+                    <Button 
+                        icon="sap-icon://cart"
+                        text="{
+                            path: 'cart>/cartItems',
+                            formatter: '.getCartCount'
+                        }"
+                        press="onGoToCart"/>
+                </contentRight>
+
+            </Bar>
+        </subHeader>
+
+        <content>
+            <List id="productList" items="{/Products}">
+
+                <items>
+                    <CustomListItem press="onItemPress" type="Active">
+
+                        <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
+
+                            <VBox width="65%">
+                                <Text text="{ProductName}" />
+                                <Text text="Price: ${UnitPrice}" />
+                                <Text text="Stock: {UnitsInStock}" />
+                            </VBox>
+
+                            <Button 
+                                text="ADD TO CART"
+                                type="Emphasized"
+                                visible="{
+                                    parts:[{path:'ProductID'}],
+                                    formatter:'.isZeroQty'
+                                }"
+                                press="onIncreaseQty"/>
+
+                            <HBox 
+                                alignItems="Center"
+                                visible="{
+                                    parts:[{path:'ProductID'}],
+                                    formatter:'.isQtyAvailable'
+                                }">
+
+                                <Button text="-" press="onDecreaseQty"/>
+
+                                <Text 
+                                    text="{
+                                        parts:[{path:'ProductID'}],
+                                        formatter:'.getQuantity'
+                                    }"
+                                    width="35px"
+                                    textAlign="Center"/>
+
+                                <Button text="+" press="onIncreaseQty"/>
+
+                            </HBox>
+
+                        </HBox>
+
+                    </CustomListItem>
+                </items>
+
+            </List>
+        </content>
+
+        <footer>
+            <Bar visible="{= ${cart>/cartItems}.length > 0 }">
+
+                <contentMiddle>
+                    <Button 
+                        type="Emphasized"
+                        text="{
+                            path:'cart>/cartItems',
+                            formatter:'.getCartSummary'
+                        }"
+                        press="onGoToCart"/>
+                </contentMiddle>
+
+            </Bar>
+        </footer>
+
+    </Page>
+
+</mvc:View>

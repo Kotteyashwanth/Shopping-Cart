@@ -1,0 +1,83 @@
+<mvc:View
+    controllerName="project11.controller.Cart"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+
+    <Page title="Cart" showNavButton="true" navButtonPress="onNavBack">
+
+        <content>
+
+            <MessageStrip
+                id="undoStrip"
+                text="Item removed"
+                type="Warning"
+                showCloseButton="true"
+                visible="false">
+
+                <link>
+                    <Link text="UNDO" press="onUndoDelete"/>
+                </link>
+
+            </MessageStrip>
+
+            <List
+                items="{cart>/cartItems}"
+                noDataText="No items in cart">
+
+                <items>
+                    <CustomListItem>
+
+                        <HBox justifyContent="SpaceBetween" alignItems="Center">
+
+                            <VBox width="50%">
+                                <Text text="{cart>ProductName}" />
+                                <Text text="Price: {cart>Price}" />
+                                <Text text="Qty: {cart>Quantity}" />
+
+                                <Text text="{
+                                    parts: [
+                                        { path: 'cart>Price' },
+                                        { path: 'cart>Quantity' }
+                                    ],
+                                    formatter: '.formatLineTotal'
+                                }"/>
+                            </VBox>
+
+                            <HBox alignItems="Center">
+                                <Button text="-" press="onDecrease"/>
+                                <Text text="{cart>Quantity}" width="30px" textAlign="Center"/>
+                                <Button text="+" press="onIncrease"/>
+                            </HBox>
+
+                            <Button
+                                icon="sap-icon://delete"
+                                type="Reject"
+                                press="onRemove"/>
+
+                        </HBox>
+
+                    </CustomListItem>
+                </items>
+
+            </List>
+
+        </content>
+
+     <footer>
+    <Toolbar>
+
+        <ToolbarSpacer/>
+
+        <Title
+            text="{
+                path: 'cart>/cartItems',
+                formatter: '.getGrandTotal'
+            }"
+            level="H2"
+        />
+
+    </Toolbar>
+</footer>
+    </Page>
+
+</mvc:View>

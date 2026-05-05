@@ -1,0 +1,36 @@
+<mvc:View
+    controllerName="project11.controller.Detail"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m">
+
+    <Page title="Product Details" showNavButton="true" navButtonPress="onBack">
+
+        <content>
+
+            <ObjectHeader
+                title="{ProductName}"
+                number="{UnitPrice}"
+                numberUnit="USD">
+
+                <attributes>
+                    <ObjectAttribute text="Product ID: {ProductID}" />
+                    <ObjectAttribute text="Category ID: {CategoryID}" />
+                    <ObjectAttribute text="Supplier ID: {SupplierID}" />
+                    <ObjectAttribute text="Quantity: {QuantityPerUnit}" />
+                </attributes>
+
+                
+                <statuses>
+                    <ObjectStatus text="Stock: {UnitsInStock}" state="Success"/>
+                    <ObjectStatus text="On Order: {UnitsOnOrder}" state="Warning"/>
+                    <ObjectStatus text="Reorder: {ReorderLevel}" state="Error"/>
+                    <ObjectStatus text="Discontinued: {Discontinued}" />
+                </statuses>
+
+            </ObjectHeader>
+      
+          </content>
+
+    </Page>
+
+</mvc:View>

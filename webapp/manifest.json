@@ -1,0 +1,93 @@
+{
+  "_version": "1.84.0",
+  "sap.app": {
+    "id": "project11",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/V2/Northwind/Northwind.svc/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "2.0"
+        }
+      }
+    }
+  },
+
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+
+  "sap.ui5": {
+    "dependencies": {
+      "minUI5Version": "1.147.2",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+
+    "models": {
+      "": {
+        "dataSource": "mainService"
+      }
+    },
+"routing": {
+  "config": {
+    "routerClass": "sap.m.routing.Router",
+    "viewType": "XML",
+    "viewPath": "project11.view",
+    "controlId": "app",
+    "controlAggregation": "pages",
+    "async": true
+  },
+
+  "routes": [
+    {
+      "pattern": "",
+      "name": "main",
+      "target": "View1"
+    },
+    {
+      "pattern": "detail/{productId}",
+      "name": "RouteDetail",
+      "target": "Detail"
+    },
+    {
+      "pattern": "cart",
+      "name": "cart",
+      "target": "Cart"
+    }
+  ],
+
+  "targets": {
+    "View1": {
+      "viewName": "View1"
+    },
+    "Detail": {
+      "viewName": "Detail"
+    },
+    "Cart": {
+      "viewName": "Cart"
+    }
+  }
+},
+
+    "rootView": {
+      "viewName": "project11.view.App",
+      "type": "XML",
+      "id": "app"
+    }
+  }
+}
