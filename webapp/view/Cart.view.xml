@@ -26,20 +26,56 @@
 
                 <items>
                     <CustomListItem>
-
-                        <HBox justifyContent="SpaceBetween" alignItems="Center">
+                        <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
 
                             <VBox width="50%">
                                 <Text text="{cart>ProductName}" />
                                 <Text text="Price: {cart>Price}" />
                                 <Text text="Qty: {cart>Quantity}" />
 
+                                <Text
+                                    visible="{
+                                        parts: [
+                                            { path: 'cart>Quantity' }
+                                        ],
+                                        formatter: '.hasDiscount'
+                                    }"
+                                    text="{
+                                        parts: [
+                                            { path: 'cart>Quantity' }
+                                        ],
+                                        formatter: '.getDiscountLabel'
+                                    }"/>
+
+                                <Text
+                                    visible="{
+                                        parts: [
+                                            { path: 'cart>Quantity' }
+                                        ],
+                                        formatter: '.hasDiscount'
+                                    }"
+                                    text="{
+                                        parts: [
+                                            { path: 'cart>Price' },
+                                            { path: 'cart>Quantity' }
+                                        ],
+                                        formatter: '.getDiscountAmount'
+                                    }"/>
+
                                 <Text text="{
                                     parts: [
                                         { path: 'cart>Price' },
                                         { path: 'cart>Quantity' }
                                     ],
-                                    formatter: '.formatLineTotal'
+                                    formatter: '.getOriginalTotal'
+                                }"/>
+
+                                <Text text="{
+                                    parts: [
+                                        { path: 'cart>Price' },
+                                        { path: 'cart>Quantity' }
+                                    ],
+                                    formatter: '.getDiscountedTotal'
                                 }"/>
                             </VBox>
 
@@ -55,7 +91,6 @@
                                 press="onRemove"/>
 
                         </HBox>
-
                     </CustomListItem>
                 </items>
 
@@ -63,21 +98,19 @@
 
         </content>
 
-     <footer>
-    <Toolbar>
+        <footer>
+            <Toolbar>
+                <ToolbarSpacer/>
+                <Title
+                    text="{
+                        path: 'cart>/cartItems',
+                        formatter: '.getGrandTotal'
+                    }"
+                    level="H2"
+                />
+            </Toolbar>
+        </footer>
 
-        <ToolbarSpacer/>
-
-        <Title
-            text="{
-                path: 'cart>/cartItems',
-                formatter: '.getGrandTotal'
-            }"
-            level="H2"
-        />
-
-    </Toolbar>
-</footer>
     </Page>
 
 </mvc:View>
