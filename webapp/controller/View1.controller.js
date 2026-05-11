@@ -19,6 +19,36 @@ sap.ui.define([
                 });
                 this.getOwnerComponent().setModel(oCartModel, "cart");
             }
+
+            this._loadCartFromStorage();
+        },
+
+        _getCartModel: function () {
+            var oCartModel = this.getOwnerComponent().getModel("cart");
+
+            if (!oCartModel) {
+                oCartModel = new JSONModel({
+                    cartItems: []
+                });
+                this.getOwnerComponent().setModel(oCartModel, "cart");
+            }
+
+            return oCartModel;
+        },
+
+        _loadCartFromStorage: function () {
+            var oCartModel = this._getCartModel();
+            var aItems = [];
+
+            try {
+                aItems = JSON.parse(window.localStorage.getItem("cartItems")) || [];
+            } catch (e) {
+                aItems = [];
+            }
+
+            oCartModel.setProperty("/cartItems", aItems);
+            oCartModel.refresh(true);
+            oCartModel.updateBindings(true);
         },
 
         _saveCartToStorage: function (aItems) {
@@ -26,29 +56,21 @@ sap.ui.define([
         },
 
         onSearch: function (oEvent) {
-            var sValue = oEvent.getParameter("newValue");
-
+            var sValue = oEvent.getParameter("newValue") || "";
             var oList = this.byId("productList");
             var oBinding = oList.getBinding("items");
-
             var sFilterType = this.byId("filterType").getSelectedKey();
             var aFilters = [];
 
             if (sValue) {
-
                 if (sFilterType === "name") {
-                    aFilters.push(
-                        new Filter("ProductName", FilterOperator.Contains, sValue)
-                    );
+                    aFilters.push(new Filter("ProductName", FilterOperator.Contains, sValue));
                 }
 
                 if (sFilterType === "price") {
                     var fValue = parseFloat(sValue);
-
                     if (!isNaN(fValue)) {
-                        aFilters.push(
-                            new Filter("UnitPrice", FilterOperator.GE, fValue)
-                        );
+                        aFilters.push(new Filter("UnitPrice", FilterOperator.GE, fValue));
                     }
                 }
             }
@@ -56,37 +78,29 @@ sap.ui.define([
             oBinding.filter(aFilters);
 
             if (sFilterType === "price") {
-                var oSorter = new Sorter("UnitPrice", false);
-                oBinding.sort(oSorter);
+                oBinding.sort(new Sorter("UnitPrice", false));
             } else {
                 oBinding.sort(null);
             }
         },
 
         onIncreaseQty: function (oEvent) {
-
             oEvent.cancelBubble();
 
             var oProduct = oEvent.getSource().getBindingContext().getObject();
-
-            var oCartModel = this.getOwnerComponent().getModel("cart");
+            var oCartModel = this._getCartModel();
             var aItems = oCartModel.getProperty("/cartItems") || [];
-
             var oItem = aItems.find(function (i) {
                 return i.ProductID === oProduct.ProductID;
             });
 
             if (oItem) {
-
                 if (oItem.Quantity >= 6) {
                     MessageToast.show("Max 6 allowed");
                     return;
                 }
-
                 oItem.Quantity += 1;
-
             } else {
-
                 aItems.push({
                     ProductID: oProduct.ProductID,
                     ProductName: oProduct.ProductName,
@@ -97,19 +111,17 @@ sap.ui.define([
 
             oCartModel.setProperty("/cartItems", aItems);
             oCartModel.refresh(true);
-
+            oCartModel.updateBindings(true);
             this._saveCartToStorage(aItems);
 
             this.getOwnerComponent().getRouter().navTo("cart");
         },
 
         onDecreaseQty: function (oEvent) {
-
             oEvent.cancelBubble();
 
             var oProduct = oEvent.getSource().getBindingContext().getObject();
-
-            var oCartModel = this.getOwnerComponent().getModel("cart");
+            var oCartModel = this._getCartModel();
             var aItems = oCartModel.getProperty("/cartItems") || [];
 
             var iIndex = aItems.findIndex(function (i) {
@@ -117,7 +129,6 @@ sap.ui.define([
             });
 
             if (iIndex > -1) {
-
                 if (aItems[iIndex].Quantity > 1) {
                     aItems[iIndex].Quantity -= 1;
                 } else {
@@ -127,15 +138,12 @@ sap.ui.define([
 
             oCartModel.setProperty("/cartItems", aItems);
             oCartModel.refresh(true);
-
+            oCartModel.updateBindings(true);
             this._saveCartToStorage(aItems);
         },
 
-        getQuantity: function (productId) {
-
-            var aItems = this.getOwnerComponent()
-                .getModel("cart")
-                .getProperty("/cartItems") || [];
+        getQuantity: function (productId, aItems) {
+            aItems = aItems || this._getCartModel().getProperty("/cartItems") || [];
 
             var oItem = aItems.find(function (i) {
                 return i.ProductID === productId;
@@ -144,31 +152,28 @@ sap.ui.define([
             return oItem ? oItem.Quantity : 0;
         },
 
-        isZeroQty: function (productId) {
-            return this.getQuantity(productId) === 0;
+        isZeroQty: function (productId, aItems) {
+            return this.getQuantity(productId, aItems) === 0;
         },
 
-        isQtyAvailable: function (productId) {
-            return this.getQuantity(productId) > 0;
+        isQtyAvailable: function (productId, aItems) {
+            return this.getQuantity(productId, aItems) > 0;
         },
 
         getCartCount: function (aItems) {
-
             if (!aItems) {
                 return "0 Items";
             }
 
             var total = 0;
-
             aItems.forEach(function (item) {
-                total += item.Quantity;
+                total += Number(item.Quantity) || 0;
             });
 
             return total + " Items";
         },
 
         getCartSummary: function (aItems) {
-
             if (!aItems || aItems.length === 0) {
                 return "";
             }
@@ -177,16 +182,13 @@ sap.ui.define([
             var totalPrice = 0;
 
             aItems.forEach(function (item) {
-
                 var qty = Number(item.Quantity) || 0;
                 var price = Number(item.Price) || 0;
-
                 var lineTotal = price * qty;
 
                 if (qty >= 6) {
                     lineTotal = lineTotal - (lineTotal * 20 / 100);
-                }
-                else if (qty >= 3) {
+                } else if (qty >= 3) {
                     lineTotal = lineTotal - (lineTotal * 10 / 100);
                 }
 
@@ -201,12 +203,9 @@ sap.ui.define([
             this.getOwnerComponent().getRouter().navTo("cart");
         },
 
-    
         onItemPress: function (oEvent) {
-
             var oItem = oEvent.getSource();
             var oContext = oItem.getBindingContext();
-
             var sProductId = oContext.getProperty("ProductID");
 
             this.getOwnerComponent().getRouter().navTo("RouteDetail", {

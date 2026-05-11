@@ -28,62 +28,79 @@
                     <CustomListItem>
                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
 
-                            <VBox width="50%">
-                                <Text text="{cart>ProductName}" />
-                                <Text text="Price: {cart>Price}" />
-                                <Text text="Qty: {cart>Quantity}" />
+                            <VBox width="55%">
 
-                                <Text
-                                    visible="{
-                                        parts: [
-                                            { path: 'cart>Quantity' }
-                                        ],
-                                        formatter: '.hasDiscount'
-                                    }"
-                                    text="{
-                                        parts: [
-                                            { path: 'cart>Quantity' }
-                                        ],
-                                        formatter: '.getDiscountLabel'
+                                <HBox>
+                                    <Text text="Product Name:" width="120px"/>
+                                    <Text text="{cart>ProductName}"/>
+                                </HBox>
+
+                                <HBox>
+                                    <Text text="Price:" width="120px"/>
+                                    <Text text="{= '$' + ${cart>Price} }"/>
+                                </HBox>
+
+                                <HBox>
+                                    <Text text="Quantity:" width="120px"/>
+                                    <Text text="{cart>Quantity}"/>
+                                </HBox>
+
+                                <HBox visible="{
+                                    parts:[{path:'cart>Quantity'}],
+                                    formatter:'.hasDiscount'
+                                }">
+                                    <Text text="Discount:" width="120px"/>
+                                    <Text text="{
+                                        parts:[{path:'cart>Quantity'}],
+                                        formatter:'.getDiscountLabel'
                                     }"/>
+                                </HBox>
 
-                                <Text
-                                    visible="{
-                                        parts: [
-                                            { path: 'cart>Quantity' }
+                                <HBox visible="{
+                                    parts:[{path:'cart>Quantity'}],
+                                    formatter:'.hasDiscount'
+                                }">
+                                    <Text text="Saved Amount:" width="120px"/>
+                                    <Text text="{
+                                        parts:[
+                                            {path:'cart>Price'},
+                                            {path:'cart>Quantity'}
                                         ],
-                                        formatter: '.hasDiscount'
-                                    }"
-                                    text="{
-                                        parts: [
-                                            { path: 'cart>Price' },
-                                            { path: 'cart>Quantity' }
-                                        ],
-                                        formatter: '.getDiscountAmount'
+                                        formatter:'.getDiscountAmount'
                                     }"/>
+                                </HBox>
 
-                                <Text text="{
-                                    parts: [
-                                        { path: 'cart>Price' },
-                                        { path: 'cart>Quantity' }
-                                    ],
-                                    formatter: '.getOriginalTotal'
-                                }"/>
+                                <HBox>
+                                    <Text text="Original Total:" width="120px"/>
+                                    <Text text="{
+                                        parts:[
+                                            {path:'cart>Price'},
+                                            {path:'cart>Quantity'}
+                                        ],
+                                        formatter:'.getOriginalTotal'
+                                    }"/>
+                                </HBox>
 
-                                <Text text="{
-                                    parts: [
-                                        { path: 'cart>Price' },
-                                        { path: 'cart>Quantity' }
-                                    ],
-                                    formatter: '.getDiscountedTotal'
-                                }"/>
+                                <HBox>
+                                    <Text text="Final Total:" width="120px"/>
+                                    <Text text="{
+                                        parts:[
+                                            {path:'cart>Price'},
+                                            {path:'cart>Quantity'}
+                                        ],
+                                        formatter:'.getDiscountedTotal'
+                                    }"/>
+                                </HBox>
+
                             </VBox>
 
-                            <HBox alignItems="Center">
-                                <Button text="-" press="onDecrease"/>
-                                <Text text="{cart>Quantity}" width="30px" textAlign="Center"/>
-                                <Button text="+" press="onIncrease"/>
-                            </HBox>
+                            <VBox alignItems="Center">
+                                <HBox alignItems="Center">
+                                    <Button text="-" press="onDecrease"/>
+                                    <Text text="{cart>Quantity}" width="30px" textAlign="Center"/>
+                                    <Button text="+" press="onIncrease"/>
+                                </HBox>
+                            </VBox>
 
                             <Button
                                 icon="sap-icon://delete"
@@ -103,11 +120,10 @@
                 <ToolbarSpacer/>
                 <Title
                     text="{
-                        path: 'cart>/cartItems',
-                        formatter: '.getGrandTotal'
+                        path:'cart>/cartItems',
+                        formatter:'.getGrandTotal'
                     }"
-                    level="H2"
-                />
+                    level="H2"/>
             </Toolbar>
         </footer>
 

@@ -8,7 +8,6 @@
 
         <customHeader>
             <Bar>
-
                 <contentLeft>
                 </contentLeft>
 
@@ -18,13 +17,11 @@
 
                 <contentRight>
                 </contentRight>
-
             </Bar>
         </customHeader>
 
         <subHeader>
             <Bar>
-
                 <contentLeft>
                     <Select id="filterType" selectedKey="name" width="120px">
                         <items>
@@ -35,14 +32,14 @@
                 </contentLeft>
 
                 <contentMiddle>
-                    <SearchField 
+                    <SearchField
                         width="400px"
                         placeholder="Search..."
                         liveChange="onSearch"/>
                 </contentMiddle>
 
                 <contentRight>
-                    <Button 
+                    <Button
                         icon="sap-icon://cart"
                         text="{
                             path: 'cart>/cartItems',
@@ -50,67 +47,67 @@
                         }"
                         press="onGoToCart"/>
                 </contentRight>
-
             </Bar>
         </subHeader>
 
         <content>
             <List id="productList" items="{/Products}">
-
                 <items>
                     <CustomListItem press="onItemPress" type="Active">
-
                         <HBox justifyContent="SpaceBetween" alignItems="Center" width="100%">
-
                             <VBox width="65%">
                                 <Text text="{ProductName}" />
                                 <Text text="Price: ${UnitPrice}" />
                                 <Text text="Stock: {UnitsInStock}" />
                             </VBox>
 
-                            <Button 
+                            <Button
                                 text="ADD TO CART"
                                 type="Emphasized"
                                 visible="{
-                                    parts:[{path:'ProductID'}],
+                                    parts:[
+                                        {path:'ProductID'},
+                                        {path:'cart>/cartItems'}
+                                    ],
                                     formatter:'.isZeroQty'
                                 }"
                                 press="onIncreaseQty"/>
 
-                            <HBox 
+                            <HBox
                                 alignItems="Center"
                                 visible="{
-                                    parts:[{path:'ProductID'}],
+                                    parts:[
+                                        {path:'ProductID'},
+                                        {path:'cart>/cartItems'}
+                                    ],
                                     formatter:'.isQtyAvailable'
                                 }">
 
                                 <Button text="-" press="onDecreaseQty"/>
 
-                                <Text 
+                                <Text
                                     text="{
-                                        parts:[{path:'ProductID'}],
+                                        parts:[
+                                            {path:'ProductID'},
+                                            {path:'cart>/cartItems'}
+                                        ],
                                         formatter:'.getQuantity'
                                     }"
                                     width="35px"
                                     textAlign="Center"/>
 
                                 <Button text="+" press="onIncreaseQty"/>
-
                             </HBox>
-
                         </HBox>
-
                     </CustomListItem>
                 </items>
-
             </List>
         </content>
 
         <footer>
             <Bar visible="{= ${cart>/cartItems}.length > 0 }">
-
                 <contentMiddle>
-                    <Button 
+                    <Button
                         type="Emphasized"
                         text="{
                             path:'cart>/cartItems',
@@ -118,7 +115,6 @@
                         }"
                         press="onGoToCart"/>
                 </contentMiddle>
-
             </Bar>
         </footer>
 

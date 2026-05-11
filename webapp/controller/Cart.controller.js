@@ -9,6 +9,43 @@ sap.ui.define([
         _lastDeletedItem: null,
         _lastDeletedIndex: null,
 
+        onInit: function () {
+            var oCartModel = this.getOwnerComponent().getModel("cart");
+
+            if (!oCartModel) {
+                oCartModel = new sap.ui.model.json.JSONModel({
+                    cartItems: []
+                });
+                this.getOwnerComponent().setModel(oCartModel, "cart");
+            }
+
+            this._loadCartFromStorage();
+        },
+
+        _getCartModel: function () {
+            return this.getOwnerComponent().getModel("cart");
+        },
+
+        _loadCartFromStorage: function () {
+            var oModel = this._getCartModel();
+            var aItems = [];
+
+            try {
+                aItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+            } catch (e) {
+                aItems = [];
+            }
+
+            oModel.setProperty("/cartItems", aItems);
+            oModel.refresh(true);
+        },
+
+        _saveCartToStorage: function () {
+            var oModel = this._getCartModel();
+            var aItems = oModel.getProperty("/cartItems") || [];
+            localStorage.setItem("cartItems", JSON.stringify(aItems));
+        },
+
         onNavBack: function () {
             this.getOwnerComponent().getRouter().navTo("main");
         },
@@ -16,15 +53,17 @@ sap.ui.define([
         onIncrease: function (oEvent) {
             var oContext = oEvent.getSource().getBindingContext("cart");
             var oItem = oContext.getObject();
+            var oModel = oContext.getModel();
 
             if (oItem.Quantity < 6) {
                 oItem.Quantity += 1;
             } else {
                 MessageToast.show("Max 6 allowed");
+                return;
             }
 
-            oContext.getModel().refresh(true);
-            localStorage.setItem("cartItems", JSON.stringify(oContext.getModel().getProperty("/cartItems") || []));
+            oModel.refresh(true);
+            this._saveCartToStorage();
         },
 
         onDecrease: function (oEvent) {
@@ -34,7 +73,7 @@ sap.ui.define([
             if (oItem.Quantity > 1) {
                 oItem.Quantity -= 1;
                 oContext.getModel().refresh(true);
-                localStorage.setItem("cartItems", JSON.stringify(oContext.getModel().getProperty("/cartItems") || []));
+                this._saveCartToStorage();
             } else {
                 this.onRemove(oEvent);
             }
@@ -53,7 +92,7 @@ sap.ui.define([
 
             oModel.setProperty("/cartItems", aItems);
             oModel.refresh(true);
-            localStorage.setItem("cartItems", JSON.stringify(aItems));
+            this._saveCartToStorage();
 
             this.byId("undoStrip").setVisible(true);
             MessageToast.show("Item removed");
@@ -61,14 +100,14 @@ sap.ui.define([
 
         onUndoDelete: function () {
             if (this._lastDeletedItem !== null) {
-                var oModel = this.getOwnerComponent().getModel("cart");
+                var oModel = this._getCartModel();
                 var aItems = oModel.getProperty("/cartItems") || [];
 
                 aItems.splice(this._lastDeletedIndex, 0, this._lastDeletedItem);
 
                 oModel.setProperty("/cartItems", aItems);
                 oModel.refresh(true);
-                localStorage.setItem("cartItems", JSON.stringify(aItems));
+                this._saveCartToStorage();
 
                 this.byId("undoStrip").setVisible(false);
 
